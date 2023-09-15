@@ -4,6 +4,14 @@ import random
 # Each scenario has a description and possible choices.
 animal = ["frog", "bug", "toad", "and chill rat", "wurm", "human male"]
 
+def show_image(path):
+    with open(path, 'r') as file:
+        file_contents = file.read()
+        print(file_contents)
+
+
+
+
 scenarios = {
     'start': {
         'description': "You are waking up in a dark forest. You do not remember how you got here. "
@@ -72,6 +80,8 @@ scenarios = {
 
 # Define a function to play the game.
 def play_game():
+ 
+    show_image("images/tree.txt")
     current_scenario = 'start'
 
     while True:
