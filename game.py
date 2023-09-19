@@ -1,7 +1,7 @@
 import random
+import time
+import os
 
-# Define the game's scenarios as dictionaries.
-# Each scenario has a description and possible choices.
 animal = ["frog", "bug", "toad", "and chill rat", "wurm", "human male"]
 
 def show_image(path):
@@ -9,7 +9,22 @@ def show_image(path):
         file_contents = file.read()
         print(file_contents)
 
+def show_text_slowly(text, delay=0.05, delay_after_period=0.8):
+    for char in text:
+        print(char, end='', flush=True)
+        if char == '.':
+            time.sleep(delay_after_period)
+        elif char == ',':
+            time.sleep(0.4)
+        else:
+            time.sleep(delay)
+    print()
 
+def show_ascii_art(path, delay=0.1):
+    with open(path, 'r') as file:
+        for line in file:
+            print(line.rstrip())
+            time.sleep(delay)    
 
 
 scenarios = {
@@ -47,9 +62,12 @@ scenarios = {
         }
     },
     'upwards_stream': {
-        'description': "You walk by the riverbed against the stream. "
-                       "Congratulations, you dead!",
-        'choices': {}
+        'description': "You walk by the riverbed against the stream. You hope to find a higher vantage point to see where you are. You keep walking, but it does not seem like you are getting any higher. "
+                       "What will you do?",
+        'choices': {
+            'Keep walking upwards': 'keep_walking_upwards',
+            'Go down': 'downwards_stream'
+        }
     },
     'downwards_stream': {
         'description': "You walk by the riverbed following the stream. "
@@ -58,9 +76,18 @@ scenarios = {
     },
     'jump_river': {
         'description': "You are feeling yourself. You take a few steps back.  "
-                       "You try to jump the river. Surprisingly you make it.",
+                       "You try to jump the river. Not surprisingly, you fall in. What will you do?",
         'choices': {
-            'die?': 'die_instantly'
+            'Swim to shore': 'die_instantly',
+            'Let the stream take you': 'swim_stream'
+        }
+    },
+    'swim_stream':{
+        'description': "You let the stream take you... The current is powerfull, but you manage to keep your head above the dark water. In the distance you see a tree branch hanging above the water. "
+                        "What will you do?",
+        'choices': {
+            'Grab branch': "grab_branch",
+            'Keep swimming': "keep_swimming"
         }
     },
     'climb_tree': {
@@ -80,29 +107,35 @@ scenarios = {
 
 # Define a function to play the game.
 def play_game():
- 
-    show_image("images/tree.txt")
+    show_ascii_art("images/tree.txt")
     current_scenario = 'start'
 
     while True:
         scenario = scenarios[current_scenario]
-        print(scenario['description'])
+        show_text_slowly(scenario['description'])  # Show text slowly.
 
         # Check if there are choices to make.
         if not scenario['choices']:
             break
 
         # Display available choices.
-        print("Choices:")
+        print("\nChoices:")
         for choice, next_scenario in scenario['choices'].items():
-            print(f"- {choice.capitalize()}")
+            show_text_slowly(f"- {choice.capitalize()}", delay=0.02)  # Show choices slowly.
 
         # Get the player's choice.
         player_choice = input("What do you choose? ").lower()
 
+        print()
         # Check if the choice is valid.
         if player_choice in scenario['choices']:
             current_scenario = scenario['choices'][player_choice]
+
+            # Check if there is ASCII art to display for the current scenario.
+            ascii_art_file = f"ascii_art/{current_scenario}.txt"
+            if os.path.isfile(ascii_art_file):
+                show_ascii_art(ascii_art_file)
+
         else:
             print("Invalid choice. Try again.")
 
