@@ -6,27 +6,27 @@ import msvcrt
 
 animal = ["frog", "bug", "toad", "and chill rat", "wurm", "human male"]
 
-def intro_animation():
+def intro_animation(delay):
     with open("images/intro/intro1.txt", 'r') as file:
         file_contents = file.read()
         print(file_contents)
-    time.sleep(0.5)
+    time.sleep(delay)
     with open("images/intro/intro2.txt", 'r') as file:
         file_contents = file.read()
         print(file_contents)
-    time.sleep(0.4)
+    time.sleep(delay)
     with open("images/intro/intro3.txt", 'r') as file:
         file_contents = file.read()
         print(file_contents)
-    time.sleep(0.3)
+    time.sleep(delay)
     with open("images/intro/intro4.txt", 'r') as file:
         file_contents = file.read()
         print(file_contents)
-    time.sleep(0.3)
+    time.sleep(delay)
     with open("images/intro/intro5.txt", 'r') as file:
         file_contents = file.read()
         print(file_contents)
-    time.sleep(0.3)
+    time.sleep(delay)
     with open("images/intro/intro6.txt", 'r') as file:
         file_contents = file.read()
         print(file_contents)
@@ -59,22 +59,6 @@ def show_ascii_art(path, delay=0.1):
         for line in file:
             print(line.rstrip())
             time.sleep(delay)    
-
-# Define a function to show ASCII art with a disappearing effect.
-def ascii_disappear(path, delay=0.1):
-    with open(path, 'r') as file:
-        lines = file.readlines()
-        for line in lines:
-            print(line.rstrip())
-            time.sleep(delay)
-        
-        time.sleep(1)  # Wait for 1 second before starting the disappearance effect.
-
-        for line in lines:
-            print(' ' * len(line), end='\r')  # Clear the line.
-            sys.stdout.flush()
-            time.sleep(delay)
-
 
 scenarios = {
     'start': {
@@ -154,9 +138,8 @@ scenarios = {
     }
 }
 
-# Define a function to play the game.
 def play_game():
-    ascii_disappear("images/tree.txt")
+    show_ascii_art("images/tree.txt")
     current_scenario = 'start'
 
     while True:
@@ -167,28 +150,35 @@ def play_game():
         if not scenario['choices']:
             break
 
-        # Display available choices.
+        # Display available choices with numbers.
         print("\nChoices:")
-        for choice, next_scenario in scenario['choices'].items():
-            show_text_slowly(f"- {choice.capitalize()}", delay=0.02)  # Show choices slowly.
+        for i, (choice, next_scenario) in enumerate(scenario['choices'].items(), start=1):
+            show_text_slowly(f"{i}. {choice.capitalize()}", delay=0.02)  # Show choices slowly.
 
-        # Get the player's choice.
-        player_choice = input("What do you choose? ").lower()
+        # Get the player's choice as a number.
+        while True:
+            try:
+                choice_number = int(input("Enter the number of your choice: "))
+                if 1 <= choice_number <= len(scenario['choices']):
+                    break
+                else:
+                    print("Invalid choice number. Try again.")
+            except ValueError:
+                print("Please enter a valid number.")
+
+        # Map the number to the corresponding choice.
+        player_choice = list(scenario['choices'].keys())[choice_number - 1]
 
         print()
-        # Check if the choice is valid.
-        if player_choice in scenario['choices']:
-            current_scenario = scenario['choices'][player_choice]
+        # Update the current scenario based on the player's choice.
+        current_scenario = scenario['choices'][player_choice]
 
-            # Check if there is ASCII art to display for the current scenario.
-            ascii_art_file = f"ascii_art/{current_scenario}.txt"
-            if os.path.isfile(ascii_art_file):
-                ascii_disappear(ascii_art_file)
-
-        else:
-            print("Invalid choice. Try again.")
+        # Check if there is ASCII art to display for the current scenario.
+        ascii_art_file = f"ascii_art/{current_scenario}.txt"
+        if os.path.isfile(ascii_art_file):
+            show_ascii_art(ascii_art_file)
 
 # Start the game.
 if __name__ == "__main__":
-    intro_animation()
+    intro_animation(0.6)
     play_game()
