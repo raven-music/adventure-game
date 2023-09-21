@@ -1,30 +1,79 @@
 import random
 import time
 import os
+import sys
+import msvcrt
 
 animal = ["frog", "bug", "toad", "and chill rat", "wurm", "human male"]
+
+def intro_animation():
+    with open("images/intro/intro1.txt", 'r') as file:
+        file_contents = file.read()
+        print(file_contents)
+    time.sleep(0.5)
+    with open("images/intro/intro2.txt", 'r') as file:
+        file_contents = file.read()
+        print(file_contents)
+    time.sleep(0.4)
+    with open("images/intro/intro3.txt", 'r') as file:
+        file_contents = file.read()
+        print(file_contents)
+    time.sleep(0.3)
+    with open("images/intro/intro4.txt", 'r') as file:
+        file_contents = file.read()
+        print(file_contents)
+    time.sleep(0.3)
+    with open("images/intro/intro5.txt", 'r') as file:
+        file_contents = file.read()
+        print(file_contents)
+    time.sleep(0.3)
+    with open("images/intro/intro6.txt", 'r') as file:
+        file_contents = file.read()
+        print(file_contents)
+    time.sleep(3)
+
 
 def show_image(path):
     with open(path, 'r') as file:
         file_contents = file.read()
         print(file_contents)
 
+typingInProgress = True
+
 def show_text_slowly(text, delay=0.05, delay_after_period=0.8):
     for char in text:
-        print(char, end='', flush=True)
+        if msvcrt.kbhit() and msvcrt.getch() == b' ':  # Check if the spacebar is NOT pressed
+            delay = 0
+
+        print(char, end='', flush=True) 
         if char == '.':
             time.sleep(delay_after_period)
         elif char == ',':
             time.sleep(0.4)
         else:
             time.sleep(delay)
-    print()
+    print()         
 
 def show_ascii_art(path, delay=0.1):
     with open(path, 'r') as file:
         for line in file:
             print(line.rstrip())
             time.sleep(delay)    
+
+# Define a function to show ASCII art with a disappearing effect.
+def ascii_disappear(path, delay=0.1):
+    with open(path, 'r') as file:
+        lines = file.readlines()
+        for line in lines:
+            print(line.rstrip())
+            time.sleep(delay)
+        
+        time.sleep(1)  # Wait for 1 second before starting the disappearance effect.
+
+        for line in lines:
+            print(' ' * len(line), end='\r')  # Clear the line.
+            sys.stdout.flush()
+            time.sleep(delay)
 
 
 scenarios = {
@@ -107,7 +156,7 @@ scenarios = {
 
 # Define a function to play the game.
 def play_game():
-    show_ascii_art("images/tree.txt")
+    ascii_disappear("images/tree.txt")
     current_scenario = 'start'
 
     while True:
@@ -134,11 +183,12 @@ def play_game():
             # Check if there is ASCII art to display for the current scenario.
             ascii_art_file = f"ascii_art/{current_scenario}.txt"
             if os.path.isfile(ascii_art_file):
-                show_ascii_art(ascii_art_file)
+                ascii_disappear(ascii_art_file)
 
         else:
             print("Invalid choice. Try again.")
 
 # Start the game.
 if __name__ == "__main__":
+    intro_animation()
     play_game()
